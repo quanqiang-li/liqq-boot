@@ -3,13 +3,17 @@ CREATE TABLE `sys_dict` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `code` varchar(50) DEFAULT NULL COMMENT '代码,如表名,业务分类',
   `name` varchar(50) DEFAULT NULL COMMENT '名称,对应code',
-  `key` varchar(50) DEFAULT NULL COMMENT '键',
-  `value` varchar(50) DEFAULT NULL COMMENT '值',
+  `k` varchar(50) DEFAULT NULL COMMENT '键',
+  `v` varchar(50) DEFAULT NULL COMMENT '值',
   `sort` int(2) DEFAULT NULL COMMENT '排序',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统字典表';
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_code_key` (`code`,`key`) USING BTREE COMMENT '一个类型下不能有两个以上相同key'
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='系统字典表';
+
+INSERT INTO `test`.`sys_dict` (`id`, `code`, `name`, `k`, `v`, `sort`, `create_time`, `update_time`) VALUES ('1', 'sex', '性别', '0', '男', '1', '2019-08-20 21:03:55', NULL);
+INSERT INTO `test`.`sys_dict` (`id`, `code`, `name`, `k`, `v`, `sort`, `create_time`, `update_time`) VALUES ('2', 'sex', '性别', '1', '女', '2', '2019-08-20 21:03:59', NULL);
 
 
 /*系统用户*/

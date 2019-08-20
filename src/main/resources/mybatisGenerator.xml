@@ -29,6 +29,7 @@
 		<table tableName="sys_dict" domainObjectName="SysDict"
 			enableSelectByExample="true" enableUpdateByExample="true"
 			enableDeleteByExample="true" enableCountByExample="true">
+			<generatedKey column="id" sqlStatement="MySql" identity="true" /><!-- 插入可返回主键 -->
 			<!--<property name="useActualColumnNames" value="true"></property> 不使用驼峰式，严格按字段名 -->
 		</table>
 	</context>
