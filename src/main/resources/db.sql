@@ -15,6 +15,22 @@ CREATE TABLE `sys_dict` (
 INSERT INTO `test`.`sys_dict` (`id`, `code`, `name`, `k`, `v`, `sort`, `create_time`, `update_time`) VALUES ('1', 'sex', '性别', '0', '男', '1', '2019-08-20 21:03:55', NULL);
 INSERT INTO `test`.`sys_dict` (`id`, `code`, `name`, `k`, `v`, `sort`, `create_time`, `update_time`) VALUES ('2', 'sex', '性别', '1', '女', '2', '2019-08-20 21:03:59', NULL);
 
+/*系统日志表*/
+CREATE TABLE `sys_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL COMMENT '用户id',
+  `module` varchar(50) DEFAULT NULL COMMENT '操作模块',
+  `status` tinyint(2) DEFAULT NULL COMMENT '操作状态 0成功 1 失败',
+  `method` varchar(255) DEFAULT NULL COMMENT '方法',
+  `args` text COMMENT '参数',
+  `return_value` text COMMENT '返回数据',
+  `remark` text COMMENT '备注',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `run_time` bigint(20) DEFAULT NULL COMMENT '运行时间,单位毫秒',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='系统日志表';
+
+
 
 /*系统用户*/
 CREATE TABLE `sys_user` (

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.liqq.annotation.LogAnnotation;
+
 @RestController
 @RequestMapping("hello")
 public class HelloController {
@@ -20,6 +22,7 @@ public class HelloController {
 
 	// 有参 http://localhost:8080/hello/zhangsan
 	@GetMapping("{name}")
+	@LogAnnotation(module="hello")
 	public String name(@PathVariable String name) {
 		return "hello " + name;
 	}

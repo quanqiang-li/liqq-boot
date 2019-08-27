@@ -11,6 +11,9 @@
 		2，MyBatis3Simple：类似MyBatis3，只是不生成XXXBySample； introspectedColumnImpl：类全限定名，用于扩展MBG -->
 	<context id="tables2model" defaultModelType="flat"
 		targetRuntime="MyBatis3">
+		<commentGenerator type="org.mybatis.generator.internal.DefaultCommentGenerator">
+			<property name="addRemarkComments" value="true" />
+		</commentGenerator>
 		<jdbcConnection driverClass="${spring.datasource.driver-class-name}"
 			connectionURL="${spring.datasource.url}" userId="${spring.datasource.username}"
 			password="${spring.datasource.password}">
@@ -26,10 +29,11 @@
 		<javaClientGenerator targetPackage="com.liqq.dao.mysql"
 			type="XMLMAPPER" targetProject="src/main/java">
 		</javaClientGenerator>
-		<table tableName="sys_dict" domainObjectName="SysDict"
+		<table tableName="sys_log" domainObjectName="SysLog"
 			enableSelectByExample="true" enableUpdateByExample="true"
 			enableDeleteByExample="true" enableCountByExample="true">
-			<generatedKey column="id" sqlStatement="MySql" identity="true" /><!-- 插入可返回主键 -->
+			<generatedKey column="id" sqlStatement="MySql" identity="true" /><!-- 
+				插入可返回主键 -->
 			<!--<property name="useActualColumnNames" value="true"></property> 不使用驼峰式，严格按字段名 -->
 		</table>
 	</context>
