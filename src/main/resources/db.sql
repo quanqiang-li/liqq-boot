@@ -25,10 +25,13 @@ CREATE TABLE `sys_log` (
   `args` text COMMENT '参数',
   `return_value` text COMMENT '返回数据',
   `remark` text COMMENT '备注',
+  `client_ip` varchar(50) DEFAULT NULL COMMENT '客户端ip',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `run_time` bigint(20) DEFAULT NULL COMMENT '运行时间,单位毫秒',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='系统日志表';
+
+
 
 
 

@@ -1,6 +1,8 @@
 package com.liqq.service;
 
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +22,7 @@ public class TestSysLogService {
 	private SysLogService sysLogService;
 	
 	@Test
-	public void testSave(){
+	public void testSave() throws InterruptedException, ExecutionException{
 		SysLog sysLog = new SysLog();
 		sysLog.setArgs("");
 		sysLog.setCreateTime(new Date());
@@ -28,8 +30,8 @@ public class TestSysLogService {
 		sysLog.setModule("启动");
 		sysLog.setRunTime(800L);
 		sysLog.setStatus((byte)0);
-		int save = sysLogService.save(sysLog);
-		System.out.println("插入数据条数:" + save);
+		Future<Integer> save = sysLogService.save(sysLog);
+		System.out.println("插入数据条数:" + save.get());
 		System.out.println("主键:" + sysLog.getId());
 	}
 	

@@ -1,5 +1,7 @@
 package com.liqq.service;
 
+import java.util.concurrent.Future;
+
 import com.liqq.model.SysLog;
 
 public interface SysLogService {
@@ -9,7 +11,7 @@ public interface SysLogService {
 	 * @param sysLog
 	 * @return
 	 */
-	int save(SysLog sysLog);
+	Future<Integer> save(SysLog sysLog);
 
 	
 }
