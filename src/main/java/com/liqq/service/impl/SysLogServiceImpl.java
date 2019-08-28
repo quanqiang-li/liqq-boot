@@ -2,6 +2,8 @@ package com.liqq.service.impl;
 
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -13,6 +15,8 @@ import com.liqq.service.SysLogService;
 
 @Service
 public class SysLogServiceImpl implements SysLogService {
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	private SysLogMapper sysLogMapper;
@@ -21,7 +25,12 @@ public class SysLogServiceImpl implements SysLogService {
 	@Override
 	@Async("myTaskExecutor")
 	public Future<Integer> save(SysLog sysLog) {
-		int insert = sysLogMapper.insert(sysLog);
+		int insert = 0;
+		try {
+			insert = sysLogMapper.insert(sysLog);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
 		return new AsyncResult<Integer>(insert);
 	}
 }
