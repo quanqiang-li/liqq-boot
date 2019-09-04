@@ -1,11 +1,10 @@
 package com.liqq.util;
 
+import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -13,8 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.config.RequestConfig.Builder;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -24,14 +25,11 @@ import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
-
-import com.alibaba.fastjson.JSON;
 
 /**
  * web服务常用工具类
@@ -92,10 +90,10 @@ public class WebUtil {
 	 *            连接超时,单位毫秒,<0 默认系统超时时间,0 永不超时
 	 * @param readTimeout
 	 *            读取数据超时时间,单位毫秒,<0 默认系统超时时间,0 永不超时
-	 * @param headers 
+	 * @param headers
 	 * @return
 	 */
-	public static String getStr(String url, int connectTimeout, int readTimeout,Header[] headers) {
+	public static String getStr(String url, int connectTimeout, int readTimeout, Header[] headers) {
 		logger.info("getStr url:{}", url);
 		CloseableHttpClient httpClient = createClient(url, connectTimeout, readTimeout);
 
@@ -146,6 +144,45 @@ public class WebUtil {
 			if (entity != null) {
 				String responseStr = EntityUtils.toString(entity, defaultCharset);
 				logger.info("postJson response:{}", responseStr);
+				return responseStr;
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param url
+	 * @param connectTimeout
+	 *            连接超时,单位毫秒,<0 默认系统超时时间,0 永不超时
+	 * @param readTimeout
+	 *            读取数据超时时间,单位毫秒,<0 默认系统超时时间,0 永不超时
+	 * @param parameters
+	 * @param headers
+	 * @return
+	 */
+	public static String postForm(String url, int connectTimeout, int readTimeout, List<? extends NameValuePair> parameters, Header[] headers) {
+		logger.info("postForm url:{}", url);
+		CloseableHttpClient httpClient = createClient(url, connectTimeout, readTimeout);
+		HttpPost httpPost = new HttpPost(url);
+		if (headers != null) {
+			httpPost.setHeaders(headers);
+		}
+		// 编码格式
+		try {
+			UrlEncodedFormEntity uefEntity = new UrlEncodedFormEntity(parameters, defaultCharset);
+			httpPost.setEntity(uefEntity);
+		} catch (UnsupportedEncodingException e) {
+			logger.error(e.getMessage());
+		}
+		try {
+			CloseableHttpResponse response = httpClient.execute(httpPost);
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				String responseStr = EntityUtils.toString(entity, defaultCharset);
+				logger.info("postForm response:{}", responseStr);
 				return responseStr;
 			}
 		} catch (Exception e) {
@@ -229,30 +266,12 @@ public class WebUtil {
 		return HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
 	}
 
-	// api平台调用报告
-	public static void apiReport() {
-		String url = "http://api.i-xinnuo.com/v1/report";
-		String businessNum = UUID.randomUUID().toString();
-		Map<String, String> paramMap = new HashMap<String, String>();
-		paramMap.put("CmdID", "CX300002");
-		paramMap.put("qymc", "天津市荣兴酒业有限公司");
-		String json = JSON.toJSONString(paramMap);
-		int readTimeout = 1000 * 60;
-		int connectTimeout = 1000 * 5;
-		Header username = new BasicHeader("username", "ixn");
-		Header businessNUm = new BasicHeader("businessNUm", businessNum);
-		Header sign = new BasicHeader("sign", "ixnzx");
-		Header[] headers = {username,businessNUm,sign};
-		postJson(url, connectTimeout, readTimeout, json, headers);
-
-	}
 
 	public static void main(String[] args) {
-//		int readTimeout = 1000;
-//		int connectTimeout = 1000;
-//		String url = "http://www.baidu.com";
-//		getStr(url, connectTimeout, readTimeout, null);
-		
-		apiReport();
+		 int readTimeout = 1000;
+		 int connectTimeout = 1000;
+		 String url = "http://www.baidu.com";
+		 getStr(url, connectTimeout, readTimeout, null);
+
 	}
 }
