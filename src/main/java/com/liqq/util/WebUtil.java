@@ -93,7 +93,7 @@ public class WebUtil {
 	 * @param headers
 	 * @return
 	 */
-	public static String getStr(String url, int connectTimeout, int readTimeout, Header[] headers) {
+	public static String getRequest(String url, int connectTimeout, int readTimeout, Header[] headers) {
 		logger.info("getStr url:{}", url);
 		CloseableHttpClient httpClient = createClient(url, connectTimeout, readTimeout);
 
@@ -271,7 +271,7 @@ public class WebUtil {
 		 int readTimeout = 1000;
 		 int connectTimeout = 1000;
 		 String url = "http://www.baidu.com";
-		 getStr(url, connectTimeout, readTimeout, null);
+		 getRequest(url, connectTimeout, readTimeout, null);
 
 	}
 }
