@@ -32,7 +32,18 @@ CREATE TABLE `sys_log` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='系统日志表';
 
 
-
+/**
+ * 系统缓存表
+ */
+CREATE TABLE `sys_cache` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `k` varchar(225) DEFAULT NULL COMMENT 'key',
+  `v` text COMMENT 'value',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `expire_time` datetime DEFAULT NULL COMMENT '过期时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_cache_k` (`k`) USING HASH COMMENT '唯一key'
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='系统缓存表';
 
 
 /*系统用户*/
