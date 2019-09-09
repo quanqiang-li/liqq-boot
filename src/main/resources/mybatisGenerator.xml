@@ -29,7 +29,7 @@
 		<javaClientGenerator targetPackage="com.liqq.dao.mysql"
 			type="XMLMAPPER" targetProject="src/main/java">
 		</javaClientGenerator>
-		<table tableName="sys_log" domainObjectName="SysLog"
+		<table tableName="sys_cache" domainObjectName="SysCache"
 			enableSelectByExample="true" enableUpdateByExample="true"
 			enableDeleteByExample="true" enableCountByExample="true">
 			<generatedKey column="id" sqlStatement="MySql" identity="true" /><!-- 
