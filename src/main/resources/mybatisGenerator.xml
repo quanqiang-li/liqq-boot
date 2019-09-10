@@ -29,7 +29,35 @@
 		<javaClientGenerator targetPackage="com.liqq.dao.mysql"
 			type="XMLMAPPER" targetProject="src/main/java">
 		</javaClientGenerator>
-		<table tableName="sys_cache" domainObjectName="SysCache"
+		<table tableName="sys_user" domainObjectName="SysUser"
+			enableSelectByExample="true" enableUpdateByExample="true"
+			enableDeleteByExample="true" enableCountByExample="true">
+			<generatedKey column="id" sqlStatement="MySql" identity="true" /><!-- 
+				插入可返回主键 -->
+			<!--<property name="useActualColumnNames" value="true"></property> 不使用驼峰式，严格按字段名 -->
+		</table>
+		<table tableName="sys_role" domainObjectName="SysRole"
+			enableSelectByExample="true" enableUpdateByExample="true"
+			enableDeleteByExample="true" enableCountByExample="true">
+			<generatedKey column="id" sqlStatement="MySql" identity="true" /><!-- 
+				插入可返回主键 -->
+			<!--<property name="useActualColumnNames" value="true"></property> 不使用驼峰式，严格按字段名 -->
+		</table>
+		<table tableName="sys_user_role" domainObjectName="SysUserRole"
+			enableSelectByExample="true" enableUpdateByExample="true"
+			enableDeleteByExample="true" enableCountByExample="true">
+			<generatedKey column="id" sqlStatement="MySql" identity="true" /><!-- 
+				插入可返回主键 -->
+			<!--<property name="useActualColumnNames" value="true"></property> 不使用驼峰式，严格按字段名 -->
+		</table>
+		<table tableName="sys_resource" domainObjectName="SysResource"
+			enableSelectByExample="true" enableUpdateByExample="true"
+			enableDeleteByExample="true" enableCountByExample="true">
+			<generatedKey column="id" sqlStatement="MySql" identity="true" /><!-- 
+				插入可返回主键 -->
+			<!--<property name="useActualColumnNames" value="true"></property> 不使用驼峰式，严格按字段名 -->
+		</table>
+		<table tableName="sys_role_resource" domainObjectName="SysRoleResource"
 			enableSelectByExample="true" enableUpdateByExample="true"
 			enableDeleteByExample="true" enableCountByExample="true">
 			<generatedKey column="id" sqlStatement="MySql" identity="true" /><!-- 

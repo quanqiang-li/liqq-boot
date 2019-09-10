@@ -1,7 +1,5 @@
 package com.liqq.conf.security;
 
-import java.util.Base64;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -38,8 +36,10 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(Base64.getEncoder().encodeToString("root:root".getBytes()));
-		System.out.println(Base64.getEncoder().encodeToString("guest:guest".getBytes()));
+		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+		String encode = bCryptPasswordEncoder.encode("123456");
+		System.out.println(encode);
+		System.out.println(bCryptPasswordEncoder.matches("123456", encode));
 	}
 
 }

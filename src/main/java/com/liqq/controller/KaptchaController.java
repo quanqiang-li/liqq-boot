@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class KaptchaController {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	private final static String CACHE_PREFIX = "kaptcha:";
+	public final static String CACHE_PREFIX = "kaptcha:";
 
 	/**
 	 * kaptchaProducer
@@ -45,18 +46,14 @@ public class KaptchaController {
 
 	/**
 	 * 获取验证码图片
-	 * 
-	 * @param codeKey
-	 *            前端生成的key,后面校验用来比对的凭证
-	 * @param response
-	 * @param validTime
-	 *            有效时间 ,单位毫秒
+	 *            
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/getKaptchaImage", method = RequestMethod.GET)
-	public ModelAndView getKaptchaImage(String codeKey, HttpServletResponse response, Integer validTime) throws Exception {
-		codeKey = CACHE_PREFIX + codeKey;
+	public ModelAndView getKaptchaImage(HttpServletRequest request,HttpServletResponse response) throws Exception {
+		// 自动生成验证码key
+		String codeKey = CACHE_PREFIX + request.getSession().getId();
 		response.setDateHeader("Expires", 0);
 
 		// Set standard HTTP/1.1 no-cache headers.
@@ -76,6 +73,8 @@ public class KaptchaController {
 		logger.info("图形验证码: {}={}", codeKey,capText);
 
 		// store the text into cache
+		//有效时间 ,单位毫秒
+		Integer validTime = 1000*300;
 		sysCacheService.writeValue(codeKey, capText, validTime);
 		// create the image with the text
 		BufferedImage bi = kaptchaProducer.createImage(capText);
@@ -103,8 +102,8 @@ public class KaptchaController {
 	 */
 	@RequestMapping(value = "/checkKaptcha", method = RequestMethod.GET)
 	@ResponseBody
-	public ReturnData checkKaptcha(String clientCode, String codeKey) throws Exception {
-		codeKey = CACHE_PREFIX + codeKey;
+	public ReturnData checkKaptcha(String clientCode, HttpServletRequest request) throws Exception {
+		String codeKey = CACHE_PREFIX + request.getSession().getId();
 		String serverCode = sysCacheService.getKey(codeKey);
 		if (clientCode != null && clientCode.equalsIgnoreCase(serverCode)) {
 			return new ReturnData(Code.OK, null);
