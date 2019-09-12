@@ -36,8 +36,8 @@ public class APIController {
 	public String guest() {
 		return "guest";
 	}
-	@GetMapping("root")
-	public String root() {
-		return "root";
+	@GetMapping("admin")
+	public String admin() {
+		return "admin";
 	}
 }

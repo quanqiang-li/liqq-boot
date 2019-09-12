@@ -82,7 +82,6 @@ public class UsernamePasswordKaptchaProvider implements AuthenticationProvider {
 		// 验证通过,创建token,并返回
 		// 加载资源
 		List<SysResource> sysResourceList = sysResourceMapper.selectByUserId(sysUser.getId());
-		
 		//Collection<? extends GrantedAuthority> authorities = sysResourceList;
 		UsernamePasswordKaptchaToken result = new UsernamePasswordKaptchaToken(principal, credentials, kaptcha, sysResourceList);
 		result.setDetails(sysUser);

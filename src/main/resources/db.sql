@@ -100,12 +100,12 @@ CREATE TABLE `sys_user_role` (
 /*系统资源表*/
 CREATE TABLE `sys_resource` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `parent_id` int(11) NOT NULL COMMENT '父级id',
+  `parent_id` int(11) DEFAULT NULL COMMENT '父级id',
   `code` varchar(50) DEFAULT NULL COMMENT '资源代码',
   `name` varchar(50) DEFAULT NULL COMMENT '资源名称',
   `href` varchar(255) DEFAULT NULL COMMENT '资源路径',
   `sort` int(4) DEFAULT NULL COMMENT '咨询排序',
-  `type` tinyint(1) DEFAULT NULL COMMENT '资源类型 0菜单 1功能',
+  `type` tinyint(2) DEFAULT NULL COMMENT '资源类型 0菜单 1功能',
   `create_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
