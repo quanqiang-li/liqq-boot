@@ -15,12 +15,22 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private UsernamePasswordKaptchaProvider UsernamePasswordKaptchaProvider;
-
+	
+	@Bean
+	public UsernamePasswordKaptchaFilter usernamePasswordKaptchaFilter(){
+		UsernamePasswordKaptchaFilter filter = new UsernamePasswordKaptchaFilter();
+		try {
+			filter.setAuthenticationManager(authenticationManager());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return filter;
+	}
+	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-
 	// 配置认证
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -32,13 +42,16 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 //		http.authorizeRequests()
 //		.antMatchers("/api/guest").hasRole("guest")
-//		.antMatchers("/api/admin").hasRole("admin")
 //		.antMatchers("/api/authed").authenticated()
 //		.anyRequest().permitAll()
-//		.and().httpBasic();
-		//.and().formLogin().usernameParameter("uname").passwordParameter("pword");
-		http.addFilterBefore(new UsernamePasswordKaptchaFilter("/login","POST"), UsernamePasswordAuthenticationFilter.class);
+//		.and().httpBasic()
+		//.and().formLogin();
+		http.authorizeRequests().antMatchers("/","/index.html","/favicon.ico","/css/**","/error/**",
+				"/html/**","/js/**","/kaptchaLogin","/kaptcha/**").permitAll();
 		http.authorizeRequests().anyRequest().authenticated();
+		// security的CsrfFilter跨站请求伪造,默认只允许"GET", "HEAD", "TRACE", "OPTIONS",不支持POST,这里粗暴禁用
+		http.csrf().disable();
+		http.addFilterBefore(usernamePasswordKaptchaFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 
 	public static void main(String[] args) {

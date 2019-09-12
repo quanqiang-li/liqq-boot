@@ -1,10 +1,6 @@
 package com.liqq.conf.security;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,23 +9,19 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.liqq.controller.KaptchaController;
 import com.liqq.dao.mysql.SysResourceMapper;
 import com.liqq.dao.mysql.SysUserMapper;
-import com.liqq.dao.mysql.SysUserRoleMapper;
-import com.liqq.model.SysCache;
 import com.liqq.model.SysResource;
 import com.liqq.model.SysUser;
 import com.liqq.model.SysUserExample;
-import com.liqq.model.SysUserRole;
-import com.liqq.model.SysUserRoleExample;
 import com.liqq.service.SysCacheService;
 
 /**
