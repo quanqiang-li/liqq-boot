@@ -12,44 +12,46 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
-	
+
 	@Autowired
-	private UsernamePasswordKaptchaProvider UsernamePasswordKaptchaProvider;
-	
+	private UsernamePasswordKaptchaProvider usernamePasswordKaptchaProvider;
+	@Autowired
+	private UsernamePasswordKaptchaSuccessHandler usernamePasswordKaptchaSuccessHandler;
+	@Autowired
+	private UsernamePasswordKaptchaFailureHandler usernamePasswordKaptchaFailureHandler;
+
 	@Bean
-	public UsernamePasswordKaptchaFilter usernamePasswordKaptchaFilter(){
+	public UsernamePasswordKaptchaFilter usernamePasswordKaptchaFilter() {
 		UsernamePasswordKaptchaFilter filter = new UsernamePasswordKaptchaFilter();
 		try {
 			filter.setAuthenticationManager(authenticationManager());
+			filter.setAuthenticationSuccessHandler(usernamePasswordKaptchaSuccessHandler);
+			filter.setAuthenticationFailureHandler(usernamePasswordKaptchaFailureHandler);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return filter;
 	}
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+
 	// 配置认证
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.authenticationProvider(UsernamePasswordKaptchaProvider);
+		auth.authenticationProvider(usernamePasswordKaptchaProvider);
 	}
 
 	// 配置授权
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-//		http.authorizeRequests()
-//		.antMatchers("/api/guest").hasRole("guest")
-//		.antMatchers("/api/authed").authenticated()
-//		.anyRequest().permitAll()
-//		.and().httpBasic()
-		//.and().formLogin();
-		http.authorizeRequests().antMatchers("/","/index.html","/favicon.ico","/css/**","/error/**",
-				"/html/**","/js/**","/kaptchaLogin","/kaptcha/**").permitAll();
+		http.authorizeRequests().antMatchers("/", "/index.html", "/favicon.ico", "/css/**", "/error/**", "/html/**", "/js/**", "/kaptchaLogin", "/kaptcha/**").permitAll();
+		// 配置url 授权访问 TODO
 		http.authorizeRequests().anyRequest().authenticated();
-		// security的CsrfFilter跨站请求伪造,默认只允许"GET", "HEAD", "TRACE", "OPTIONS",不支持POST,这里粗暴禁用
+		// security的CsrfFilter跨站请求伪造,默认只允许"GET", "HEAD", "TRACE",
+		// "OPTIONS",不支持POST,这里粗暴禁用
 		http.csrf().disable();
 		http.addFilterBefore(usernamePasswordKaptchaFilter(), UsernamePasswordAuthenticationFilter.class);
 	}

@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.code.kaptcha.Producer;
 import com.liqq.common.Code;
+import com.liqq.common.Constant;
 import com.liqq.common.ReturnData;
 import com.liqq.service.SysCacheService;
 
@@ -33,7 +34,7 @@ public class KaptchaController {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-	public final static String CACHE_PREFIX = "kaptcha:";
+	
 
 	/**
 	 * kaptchaProducer
@@ -53,7 +54,7 @@ public class KaptchaController {
 	@RequestMapping(value = "/getKaptchaImage", method = RequestMethod.GET)
 	public ModelAndView getKaptchaImage(HttpServletRequest request,HttpServletResponse response) throws Exception {
 		// 自动生成验证码key
-		String codeKey = CACHE_PREFIX + request.getSession().getId();
+		String codeKey = Constant.KAPTCHA_CACHE_PREFIX + request.getSession().getId();
 		response.setDateHeader("Expires", 0);
 
 		// Set standard HTTP/1.1 no-cache headers.
@@ -103,7 +104,7 @@ public class KaptchaController {
 	@RequestMapping(value = "/checkKaptcha", method = RequestMethod.GET)
 	@ResponseBody
 	public ReturnData checkKaptcha(String clientCode, HttpServletRequest request) throws Exception {
-		String codeKey = CACHE_PREFIX + request.getSession().getId();
+		String codeKey = Constant.KAPTCHA_CACHE_PREFIX + request.getSession().getId();
 		String serverCode = sysCacheService.getKey(codeKey);
 		if (clientCode != null && clientCode.equalsIgnoreCase(serverCode)) {
 			return new ReturnData(Code.OK, null);

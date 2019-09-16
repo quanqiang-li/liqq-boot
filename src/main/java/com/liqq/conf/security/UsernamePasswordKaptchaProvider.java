@@ -12,11 +12,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.liqq.controller.KaptchaController;
+import com.liqq.common.Constant;
 import com.liqq.dao.mysql.SysResourceMapper;
 import com.liqq.dao.mysql.SysUserMapper;
 import com.liqq.model.SysResource;
@@ -51,7 +50,7 @@ public class UsernamePasswordKaptchaProvider implements AuthenticationProvider {
 		String kaptcha = token.getKaptcha();
 		ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		String sessionId = servletRequestAttributes.getSessionId();
-		String value = sysCacheService.getKey(KaptchaController.CACHE_PREFIX + sessionId);
+		String value = sysCacheService.getKey(Constant.KAPTCHA_CACHE_PREFIX + sessionId);
 		if (!kaptcha.equalsIgnoreCase(value)) {
 			throw new BadCredentialsException("验证码错误");
 		}
@@ -76,7 +75,11 @@ public class UsernamePasswordKaptchaProvider implements AuthenticationProvider {
 		List<SysResource> sysResourceList = sysResourceMapper.selectByUserId(sysUser.getId());
 		//Collection<? extends GrantedAuthority> authorities = sysResourceList;
 		UsernamePasswordKaptchaToken result = new UsernamePasswordKaptchaToken(principal, credentials, kaptcha, sysResourceList);
+		// 帐号信息的密码清除
+		sysUser.setPassword(null);
 		result.setDetails(sysUser);
+		// 用户输入的密码清除
+		result.eraseCredentials();
 		return result;
 	}
 

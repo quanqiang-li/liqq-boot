@@ -23,7 +23,7 @@ public class SysCacheServiceImpl implements SysCacheService {
 	 * @param key
 	 * @param value
 	 * @param validTime
-	 *            有效时间,单位毫秒
+	 *            有效时间,单位毫秒 null永不过期
 	 * @return 插入条数
 	 */
 	@Override

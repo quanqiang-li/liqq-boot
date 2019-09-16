@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
+import com.liqq.common.Code;
+import com.liqq.common.ReturnData;
 import com.liqq.util.WebUtil;
 
 @Component
@@ -37,7 +39,7 @@ public class WebErrorConfigurer extends BasicErrorController {
 		HttpStatus status = getStatus(request);
 		body.put("httpStatus", status.value());
 		body.put("addr", WebUtil.getIpAddr(request));
-		return JSON.toJSONString(body);
+		return JSON.toJSONString(new ReturnData(Code.GLOBAL_ERROR, body));
 	}
 	
 	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
