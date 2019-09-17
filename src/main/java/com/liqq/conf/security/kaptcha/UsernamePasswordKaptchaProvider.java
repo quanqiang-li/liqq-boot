@@ -1,4 +1,4 @@
-package com.liqq.conf.security;
+package com.liqq.conf.security.kaptcha;
 
 import java.util.List;
 

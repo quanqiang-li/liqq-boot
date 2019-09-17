@@ -10,23 +10,26 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.liqq.conf.security.kaptcha.UsernamePasswordKaptchaFilter;
+import com.liqq.conf.security.kaptcha.UsernamePasswordKaptchaProvider;
+
 @Configuration
 public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private UsernamePasswordKaptchaProvider usernamePasswordKaptchaProvider;
 	@Autowired
-	private UsernamePasswordKaptchaSuccessHandler usernamePasswordKaptchaSuccessHandler;
+	private MyAuthSuccessHandler myAuthSuccessHandler;
 	@Autowired
-	private UsernamePasswordKaptchaFailureHandler usernamePasswordKaptchaFailureHandler;
+	private MyAuthFailureHandler myAuthFailureHandler;
 
 	@Bean
 	public UsernamePasswordKaptchaFilter usernamePasswordKaptchaFilter() {
 		UsernamePasswordKaptchaFilter filter = new UsernamePasswordKaptchaFilter();
 		try {
 			filter.setAuthenticationManager(authenticationManager());
-			filter.setAuthenticationSuccessHandler(usernamePasswordKaptchaSuccessHandler);
-			filter.setAuthenticationFailureHandler(usernamePasswordKaptchaFailureHandler);
+			filter.setAuthenticationSuccessHandler(myAuthSuccessHandler);
+			filter.setAuthenticationFailureHandler(myAuthFailureHandler);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -47,8 +50,11 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	// 配置授权
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/", "/index.html", "/favicon.ico", "/css/**", "/error/**", "/html/**", "/js/**", "/kaptchaLogin", "/logout", "/kaptcha/**").permitAll();
-		// 配置url 授权访问 TODO
+		http.authorizeRequests().antMatchers("/", "/index.html", "/favicon.ico", "/css/**", "/error/**", "/html/**", "/js/**", "/kaptchaLogin", "/logout", "/kaptcha/**")
+				.permitAll();
+		//http.logout().
+		http.sessionManagement().disable();
+		// 配置url 授权访问
 		http.authorizeRequests().anyRequest().access("@myAccessDecisionManager.decide()");
 		// security的CsrfFilter跨站请求伪造,默认只允许"GET", "HEAD", "TRACE",
 		// "OPTIONS",不支持POST,这里粗暴禁用

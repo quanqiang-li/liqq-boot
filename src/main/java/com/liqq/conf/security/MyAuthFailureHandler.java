@@ -20,7 +20,7 @@ import com.liqq.common.ReturnData;
  *
  */
 @Component
-public class UsernamePasswordKaptchaFailureHandler implements AuthenticationFailureHandler{
+public class MyAuthFailureHandler implements AuthenticationFailureHandler{
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {

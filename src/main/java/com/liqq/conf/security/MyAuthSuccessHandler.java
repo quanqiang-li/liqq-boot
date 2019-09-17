@@ -23,7 +23,7 @@ import com.liqq.service.SysCacheService;
  *
  */
 @Component
-public class UsernamePasswordKaptchaSuccessHandler implements AuthenticationSuccessHandler {
+public class MyAuthSuccessHandler implements AuthenticationSuccessHandler {
 
 	@Autowired
 	private SysCacheService sysCacheService;
