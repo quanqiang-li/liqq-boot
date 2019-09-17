@@ -58,7 +58,9 @@
 
 	<!-- 记录dao的sql,追加到root -->
 	<logger name="com.liqq.dao.mysql" level="DEBUG" />
-
+	<!-- 记录security的调试信息,追加到root
+	<logger name="org.springframework.security" level="DEBUG" />
+ -->
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE_ALL" />

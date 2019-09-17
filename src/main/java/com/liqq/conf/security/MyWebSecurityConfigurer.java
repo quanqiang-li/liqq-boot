@@ -47,9 +47,9 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	// 配置授权
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/", "/index.html", "/favicon.ico", "/css/**", "/error/**", "/html/**", "/js/**", "/kaptchaLogin", "/kaptcha/**").permitAll();
+		http.authorizeRequests().antMatchers("/", "/index.html", "/favicon.ico", "/css/**", "/error/**", "/html/**", "/js/**", "/kaptchaLogin", "/logout", "/kaptcha/**").permitAll();
 		// 配置url 授权访问 TODO
-		http.authorizeRequests().anyRequest().authenticated();
+		http.authorizeRequests().anyRequest().access("@myAccessDecisionManager.decide()");
 		// security的CsrfFilter跨站请求伪造,默认只允许"GET", "HEAD", "TRACE",
 		// "OPTIONS",不支持POST,这里粗暴禁用
 		http.csrf().disable();

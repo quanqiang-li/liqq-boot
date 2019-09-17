@@ -30,7 +30,7 @@ public class ClearCacheTask {
 	/**
 	 * 清理过期的缓存
 	 */
-	@Scheduled(cron = "${ClearCacheTask.cron}")
+	//@Scheduled(cron = "${ClearCacheTask.cron}")
 	public void clearCache() {
 		logger.info("开始清理过期缓存...");
 		SysCacheExample example = new SysCacheExample();

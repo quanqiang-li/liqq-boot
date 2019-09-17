@@ -24,7 +24,7 @@ import com.liqq.model.SysUserExample;
 import com.liqq.service.SysCacheService;
 
 /**
- * 自定义provider,参考AbstractUserDetailsAuthenticationProvider
+ * 自定义provider,参考 AbstractUserDetailsAuthenticationProvider
  * 
  * @author liqq
  *
