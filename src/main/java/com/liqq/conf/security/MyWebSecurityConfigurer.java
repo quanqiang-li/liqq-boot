@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
 import com.liqq.conf.security.kaptcha.UsernamePasswordKaptchaFilter;
 import com.liqq.conf.security.kaptcha.UsernamePasswordKaptchaProvider;
@@ -52,7 +53,8 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers("/", "/index.html", "/favicon.ico", "/css/**", "/error/**", "/html/**", "/js/**", "/kaptchaLogin", "/logout", "/kaptcha/**")
 				.permitAll();
-		//http.logout().
+		// 默认logout退出会重定向到/login?logout,这里使用然后状态,适用restfult场景
+		http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
 		http.sessionManagement().disable();
 		// 配置url 授权访问
 		http.authorizeRequests().anyRequest().access("@myAccessDecisionManager.decide()");
