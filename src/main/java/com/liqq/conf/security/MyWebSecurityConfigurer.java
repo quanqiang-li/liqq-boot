@@ -23,6 +23,10 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	private MyAuthSuccessHandler myAuthSuccessHandler;
 	@Autowired
 	private MyAuthFailureHandler myAuthFailureHandler;
+	@Autowired
+	private MyAccessDecisionManager myAccessDecisionManager;
+	@Autowired
+	private MyAccessDeniedHandler myAccessDeniedHandler;
 
 	@Bean
 	public UsernamePasswordKaptchaFilter usernamePasswordKaptchaFilter() {
@@ -51,13 +55,14 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	// 配置授权
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/", "/index.html", "/favicon.ico", "/css/**", "/error/**", "/html/**", "/js/**", "/kaptchaLogin", "/logout", "/kaptcha/**")
-				.permitAll();
+		http.authorizeRequests().antMatchers("/", "/index.html", "/favicon.ico", "/css/**", "/error/**", "/html/**",
+				"/js/**", "/kaptchaLogin", "/logout", "/kaptcha/**").permitAll();
 		// 默认logout退出会重定向到/login?logout,这里使用然后状态,适用restfult场景
 		http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
 		http.sessionManagement().disable();
 		// 配置url 授权访问
-		http.authorizeRequests().anyRequest().access("@myAccessDecisionManager.decide()");
+		http.exceptionHandling().accessDeniedHandler(myAccessDeniedHandler);
+		http.authorizeRequests().anyRequest().authenticated().accessDecisionManager(myAccessDecisionManager);
 		// security的CsrfFilter跨站请求伪造,默认只允许"GET", "HEAD", "TRACE",
 		// "OPTIONS",不支持POST,这里粗暴禁用
 		http.csrf().disable();
