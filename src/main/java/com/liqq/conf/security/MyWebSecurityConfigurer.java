@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -13,7 +14,11 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 
 import com.liqq.conf.security.kaptcha.UsernamePasswordKaptchaFilter;
 import com.liqq.conf.security.kaptcha.UsernamePasswordKaptchaProvider;
-
+/**
+ * Security的自定义配置
+ * @author Administrator
+ *
+ */
 @Configuration
 public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
@@ -27,6 +32,8 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	private MyAccessDecisionManager myAccessDecisionManager;
 	@Autowired
 	private MyAccessDeniedHandler myAccessDeniedHandler;
+	@Autowired
+	private MyAuthenticationEntryPoint myAuthenticationEntryPoint;
 
 	@Bean
 	public UsernamePasswordKaptchaFilter usernamePasswordKaptchaFilter() {
@@ -55,14 +62,13 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	// 配置授权
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/", "/index.html", "/favicon.ico", "/css/**", "/error/**", "/html/**",
-				"/js/**", "/kaptchaLogin", "/logout", "/kaptcha/**").permitAll();
-		// 默认logout退出会重定向到/login?logout,这里使用然后状态,适用restfult场景
-		http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
-		http.sessionManagement().disable();
 		// 配置url 授权访问
-		http.exceptionHandling().accessDeniedHandler(myAccessDeniedHandler);
 		http.authorizeRequests().anyRequest().authenticated().accessDecisionManager(myAccessDecisionManager);
+		http.exceptionHandling().accessDeniedHandler(myAccessDeniedHandler).authenticationEntryPoint(myAuthenticationEntryPoint);
+		// 默认logout退出会重定向到/login?logout,这里使用返回状态,适用restfult场景
+		http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
+		// 不使用session保存Authentication
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		// security的CsrfFilter跨站请求伪造,默认只允许"GET", "HEAD", "TRACE",
 		// "OPTIONS",不支持POST,这里粗暴禁用
 		http.csrf().disable();
