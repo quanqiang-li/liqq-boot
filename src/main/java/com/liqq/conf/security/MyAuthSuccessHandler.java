@@ -34,7 +34,8 @@ public class MyAuthSuccessHandler implements AuthenticationSuccessHandler {
 		ReturnData rd = new ReturnData(Code.OK, authentication);
 		String loginInfo = JSON.toJSONString(rd);
 		String id = request.getSession().getId();
-		sysCacheService.writeValue(Constant.LOGIN_CACHE_PREFIX + id, loginInfo, null);
+		authentication.getName();
+		sysCacheService.writeValue(Constant.LOGIN_CACHE_PREFIX + authentication.getName(), loginInfo, null);
 		response.setCharacterEncoding(Constant.CHARSET_UTF8);
 		response.getOutputStream().write(loginInfo.getBytes(Constant.CHARSET_UTF8));
 	}

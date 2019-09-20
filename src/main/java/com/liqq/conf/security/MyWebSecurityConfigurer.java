@@ -68,6 +68,7 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 		// 默认logout退出会重定向到/login?logout,这里使用返回状态,适用restfult场景
 		http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
 		// 不使用session保存Authentication
+		http.sessionManagement().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		// security的CsrfFilter跨站请求伪造,默认只允许"GET", "HEAD", "TRACE",
 		// "OPTIONS",不支持POST,这里粗暴禁用
