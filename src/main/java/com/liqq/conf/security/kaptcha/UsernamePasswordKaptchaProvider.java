@@ -12,8 +12,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.liqq.common.Constant;
 import com.liqq.dao.mysql.SysResourceMapper;
@@ -47,11 +45,10 @@ public class UsernamePasswordKaptchaProvider implements AuthenticationProvider {
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		UsernamePasswordKaptchaToken token = (UsernamePasswordKaptchaToken) authentication;
 		// 验证码比对
-		String kaptcha = token.getKaptcha();
-		ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-		String sessionId = servletRequestAttributes.getSessionId();
-		String value = sysCacheService.getKey(Constant.KAPTCHA_CACHE_PREFIX + sessionId);
-		if (!kaptcha.equalsIgnoreCase(value)) {
+		String kaptchaKey = token.getKaptchaKey();
+		String kaptchaValue = token.getKaptchaValue();
+		String value = sysCacheService.getKey(Constant.KAPTCHA_CACHE_PREFIX + kaptchaKey);
+		if (!kaptchaValue.equalsIgnoreCase(value)) {
 			throw new BadCredentialsException("验证码错误");
 		}
 		// 从数据库查询用户 可以判断用户是否可用,密码过期等等...
@@ -70,12 +67,11 @@ public class UsernamePasswordKaptchaProvider implements AuthenticationProvider {
 		if(!passwordEncoder.matches(credentials, password)){
 			throw new BadCredentialsException("密码错误");
 		}
-		// 验证通过,创建token,并返回
+		// 验证通过
 		// 加载资源
 		List<SysResource> sysResourceList = sysResourceMapper.selectByUserId(sysUser.getId());
-		//Collection<? extends GrantedAuthority> authorities = sysResourceList;
-		UsernamePasswordKaptchaToken result = new UsernamePasswordKaptchaToken(principal, credentials, kaptcha, sysResourceList);
-		// 帐号信息的密码清除
+		UsernamePasswordKaptchaToken result = new UsernamePasswordKaptchaToken(principal, credentials,sysResourceList);
+		// 帐号信息的密码清除,然后放在Authentication
 		sysUser.setPassword(null);
 		result.setDetails(sysUser);
 		// 用户输入的密码清除

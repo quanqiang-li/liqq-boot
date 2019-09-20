@@ -24,7 +24,8 @@ public class UsernamePasswordKaptchaFilter extends AbstractAuthenticationProcess
 
 	private String usernameParameter = "username";
 	private String passwordParameter = "password";
-	private String kaptchaParameter = "kaptcha";
+	private String kaptchaKeyParameter = "kaptchaKey";
+	private String kaptchaValueParameter = "kaptchaValue";
 
 	@Autowired
 	private UsernamePasswordKaptchaProvider UsernamePasswordKaptchaProvider;
@@ -46,12 +47,14 @@ public class UsernamePasswordKaptchaFilter extends AbstractAuthenticationProcess
 		if (StringUtils.isEmpty(credentials)) {
 			throw new AuthenticationServiceException("请输入密码");
 		}
-		String kaptcha = request.getParameter(kaptchaParameter);
-		if (StringUtils.isEmpty(kaptcha)) {
+		String kaptchaValue = request.getParameter(kaptchaValueParameter);
+		if (StringUtils.isEmpty(kaptchaValue)) {
 			throw new AuthenticationServiceException("请输入验证码");
 		}
+		String kaptchaKey = request.getParameter(kaptchaKeyParameter);
 		principal = principal.trim();
-		UsernamePasswordKaptchaToken token = new UsernamePasswordKaptchaToken(principal, credentials, kaptcha);
+		UsernamePasswordKaptchaToken token = new UsernamePasswordKaptchaToken(principal, credentials, kaptchaKey,
+				kaptchaValue);
 		// Allow subclasses to set the "details" property
 		setDetails(request, token);
 		return UsernamePasswordKaptchaProvider.authenticate(token);

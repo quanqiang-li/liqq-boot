@@ -17,7 +17,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.liqq.common.Constant;
 import com.liqq.service.SysCacheService;
 
@@ -69,13 +68,13 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
 		if(StringUtils.isEmpty(value)) {
 			throw new AccessDeniedException("非法访问");
 		}
-		JSONArray authorities = JSON.parseObject(value).getJSONArray("authorities");
-		if(authorities == null || authorities.isEmpty()) {
+		MyLoginInfo myLoginInfo = JSON.parseObject(value, MyLoginInfo.class);
+		if(myLoginInfo.sysResourceList == null || myLoginInfo.sysResourceList.isEmpty()) {
 			throw new AccessDeniedException("未授权访问");
 		}
-		for (int i = 0; i < authorities.size(); i++) {
-			String href = authorities.getJSONObject(i).getString("href");
-			if (antPathMatcher.match(href, request.getRequestURI())) {
+		for (int i = 0; i < myLoginInfo.sysResourceList.size(); i++) {
+			String authority = myLoginInfo.sysResourceList.get(i).getAuthority();
+			if (antPathMatcher.match(authority, request.getRequestURI())) {
 				return;
 			}
 		}
