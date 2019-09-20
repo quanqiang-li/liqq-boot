@@ -37,10 +37,6 @@ public class UsernamePasswordKaptchaFilter extends AbstractAuthenticationProcess
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, IOException, ServletException {
-		// TODO 放在另一个filter中 https://golb.hplar.ch/2019/05/stateless.html
-		// 从request header或者parameter获取token（登录成功生成的token返回给客户端）
-		// 如果有token，则从缓存获取登录用户信息，获取之后反序列化Authentication 直接返回，获取不到的执行下面的正常认证
-		// 如果没有token，则执行下面的正常认证
 
 		String principal = request.getParameter(usernameParameter);
 		if (StringUtils.isEmpty(principal)) {

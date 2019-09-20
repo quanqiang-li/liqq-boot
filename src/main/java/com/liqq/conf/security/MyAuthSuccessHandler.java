@@ -1,6 +1,9 @@
 package com.liqq.conf.security;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -28,16 +31,19 @@ public class MyAuthSuccessHandler implements AuthenticationSuccessHandler {
 	@Autowired
 	private SysCacheService sysCacheService;
 
+	// 缓存登陆后的用户信息,并返回token给调用者
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-		// 缓存登陆后的用户信息,并返回给调用者
-		ReturnData rd = new ReturnData(Code.OK, authentication);
-		String loginInfo = JSON.toJSONString(rd);
-		String id = request.getSession().getId();
-		authentication.getName();
-		sysCacheService.writeValue(Constant.LOGIN_CACHE_PREFIX + authentication.getName(), loginInfo, null);
+		String token = UUID.randomUUID().toString();
+		String authStr = JSON.toJSONString(authentication);
+		// 缓存token一天
+		sysCacheService.writeValue(Constant.LOGIN_CACHE_PREFIX + token, authStr, 24*60*60*1000);
+		// 返回token给调用者
+		Map<String, String> data = new HashMap<String, String>();
+		data.put(Constant.TOKEN_PARAM, token);
+		ReturnData rd = new ReturnData(Code.OK, data);
 		response.setCharacterEncoding(Constant.CHARSET_UTF8);
-		response.getOutputStream().write(loginInfo.getBytes(Constant.CHARSET_UTF8));
+		response.getOutputStream().write(JSON.toJSONString(rd).getBytes(Constant.CHARSET_UTF8));
 	}
 
 }

@@ -18,4 +18,8 @@ public final class Constant {
 	 * 验证码缓存前缀
 	 */
 	public static final String KAPTCHA_CACHE_PREFIX = "kaptcha:";
+	/**
+	 * token参数
+	 */
+	public static final String TOKEN_PARAM = "token";
 }

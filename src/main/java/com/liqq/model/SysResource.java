@@ -10,7 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
  * This class corresponds to the database table sys_resource
  */
 public class SysResource implements GrantedAuthority{
-    /**
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
@@ -328,6 +329,6 @@ public class SysResource implements GrantedAuthority{
 
 	@Override
 	public String getAuthority() {
-		return this.href;
+		return href;
 	}
 }

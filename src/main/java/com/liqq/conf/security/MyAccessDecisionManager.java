@@ -1,20 +1,25 @@
 package com.liqq.conf.security;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.liqq.common.Constant;
+import com.liqq.service.SysCacheService;
 
 /**
  * 授权处理
@@ -24,6 +29,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  */
 @Component
 public class MyAccessDecisionManager implements AccessDecisionManager {
+
+	@Autowired
+	private SysCacheService sysCacheService;
 
 	private AntPathMatcher antPathMatcher = new AntPathMatcher();
 
@@ -52,20 +60,41 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
 				return;
 			}
 		}
-		// 需要认证授权才可以访问
-		if (authentication == null) {
+		// SessionCreationPolicy.STATELESS 禁用session来保存authentication，这里从缓存取出来
+		String token = extractToken(request);
+		if(StringUtils.isEmpty(token)) {
 			throw new AccessDeniedException("未认证");
 		}
-		// 这里是使用SecurityContextHolder,也可以缓存到redis
-		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-		Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-		while (iterator.hasNext()) {
-			String authority = iterator.next().getAuthority();
-			if (antPathMatcher.match(authority, request.getRequestURI())) {
+		String value = sysCacheService.getKey(Constant.LOGIN_CACHE_PREFIX + token);
+		if(StringUtils.isEmpty(value)) {
+			throw new AccessDeniedException("非法访问");
+		}
+		JSONArray authorities = JSON.parseObject(value).getJSONArray("authorities");
+		if(authorities == null || authorities.isEmpty()) {
+			throw new AccessDeniedException("未授权访问");
+		}
+		for (int i = 0; i < authorities.size(); i++) {
+			String href = authorities.getJSONObject(i).getString("href");
+			if (antPathMatcher.match(href, request.getRequestURI())) {
 				return;
 			}
 		}
 		throw new AccessDeniedException("未授权访问");
+	}
+
+	/**
+	 * 提取token的值
+	 * 
+	 * @param request
+	 * @return
+	 */
+	private String extractToken(HttpServletRequest request) {
+		String token = request.getHeader(Constant.TOKEN_PARAM);
+		if (StringUtils.isEmpty(token)) {
+			token = request.getParameter(Constant.TOKEN_PARAM);
+		}
+		return token;
+
 	}
 
 	@Override
