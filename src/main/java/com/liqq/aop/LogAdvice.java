@@ -17,11 +17,14 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.alibaba.fastjson.JSON;
 import com.liqq.annotation.LogAnnotation;
+import com.liqq.common.Constant;
 import com.liqq.model.SysLog;
 import com.liqq.service.SysLogService;
 import com.liqq.util.WebUtil;
+
 /**
  * 日志注解处理
+ * 
  * @author liqq
  *
  */
@@ -48,32 +51,36 @@ public class LogAdvice {
 		byte status = 0;
 		String remark = null;
 		String ip = null;
+		Integer userId = null;
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		Object[] args = joinPoint.getArgs();
 		String method = signature.getDeclaringTypeName() + "." + signature.getName();
 		LogAnnotation annotation = signature.getMethod().getAnnotation(LogAnnotation.class);
 		String module = annotation.module();
 		SysLog sysLog = new SysLog();
+
 		try {
-			HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+					.getRequest();
 			ip = WebUtil.getIpAddr(request);
 			res = joinPoint.proceed();
 			time = System.currentTimeMillis() - start.getTime();
+			userId = (Integer) request.getAttribute(Constant.USER_ID);
 		} catch (Throwable e) {
 			status = 1;
 			remark = e.getMessage();
 			e.printStackTrace();
 		} finally {
-			sysLog.setArgs(JSON.toJSONString(args));
+			sysLog.setArgs(JSON.toJSONString(args));// 入参
 			sysLog.setCreateTime(start);
 			sysLog.setMethod(method);
-			sysLog.setModule(module);
-			sysLog.setStatus(status);
-			sysLog.setReturnValue(JSON.toJSONString(res));
+			sysLog.setModule(module); // 模块
+			sysLog.setStatus(status); // 状态
+			sysLog.setReturnValue(JSON.toJSONString(res)); // 然后结果
 			sysLog.setRemark(remark);
 			sysLog.setRunTime(time);
 			sysLog.setClientIp(ip);
-			// sysLog.setUserId(userId); TODO
+			sysLog.setUserId(userId);
 			sysLogService.save(sysLog);
 		}
 		return res;

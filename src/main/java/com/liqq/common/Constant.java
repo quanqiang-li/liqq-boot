@@ -19,7 +19,19 @@ public final class Constant {
 	 */
 	public static final String KAPTCHA_CACHE_PREFIX = "kaptcha:";
 	/**
+	 * 短信前缀sms
+	 */
+	public static final String SMS_PREFIX = "sms:";
+	/**
 	 * token参数
 	 */
 	public static final String TOKEN_PARAM = "token";
+	/**
+	 * sysuser id 属性
+	 */
+	public static final String USER_ID = "userId";
+	/**
+	 * sysuser id 属性
+	 */
+	public static final Integer PAGE_SIZE = 10;
 }

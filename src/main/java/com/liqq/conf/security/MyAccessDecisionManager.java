@@ -19,6 +19,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.alibaba.fastjson.JSON;
 import com.liqq.common.Constant;
 import com.liqq.service.SysCacheService;
+import com.liqq.util.WebUtil;
 
 /**
  * 授权处理
@@ -36,7 +37,7 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
 
 	// 放行的资源
 	private static String[] permitAll = { "/", "/index.html", "/favicon.ico", "/css/**", "/error/**", "/html/**",
-			"/js/**", "/kaptchaLogin", "/logout", "/kaptcha/**" };
+			"/js/**", "/kaptchaLogin", "/logout", "/kaptcha/**", "/smsLogin", "/sms/**" };
 
 	/**
 	 * 授权失败抛出异常
@@ -60,40 +61,27 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
 			}
 		}
 		// SessionCreationPolicy.STATELESS 禁用session来保存authentication，这里从缓存取出来
-		String token = extractToken(request);
-		if(StringUtils.isEmpty(token)) {
+		String token = WebUtil.extractParam(request, Constant.TOKEN_PARAM);
+		if (StringUtils.isEmpty(token)) {
 			throw new AccessDeniedException("未认证");
 		}
 		String value = sysCacheService.getKey(Constant.LOGIN_CACHE_PREFIX + token);
-		if(StringUtils.isEmpty(value)) {
+		if (StringUtils.isEmpty(value)) {
 			throw new AccessDeniedException("非法访问");
 		}
 		MyLoginInfo myLoginInfo = JSON.parseObject(value, MyLoginInfo.class);
-		if(myLoginInfo.sysResourceList == null || myLoginInfo.sysResourceList.isEmpty()) {
+		if (myLoginInfo.sysResourceList == null || myLoginInfo.sysResourceList.isEmpty()) {
 			throw new AccessDeniedException("未授权访问");
 		}
 		for (int i = 0; i < myLoginInfo.sysResourceList.size(); i++) {
 			String authority = myLoginInfo.sysResourceList.get(i).getAuthority();
 			if (antPathMatcher.match(authority, request.getRequestURI())) {
+				// 授权通过，放入userId，方便后续的记录日志等使用
+				request.setAttribute(Constant.USER_ID, myLoginInfo.sysUser.getId());
 				return;
 			}
 		}
 		throw new AccessDeniedException("未授权访问");
-	}
-
-	/**
-	 * 提取token的值
-	 * 
-	 * @param request
-	 * @return
-	 */
-	private String extractToken(HttpServletRequest request) {
-		String token = request.getHeader(Constant.TOKEN_PARAM);
-		if (StringUtils.isEmpty(token)) {
-			token = request.getParameter(Constant.TOKEN_PARAM);
-		}
-		return token;
-
 	}
 
 	@Override

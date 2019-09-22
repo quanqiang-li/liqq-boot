@@ -28,7 +28,7 @@ public class UsernamePasswordKaptchaFilter extends AbstractAuthenticationProcess
 	private String kaptchaValueParameter = "kaptchaValue";
 
 	@Autowired
-	private UsernamePasswordKaptchaProvider UsernamePasswordKaptchaProvider;
+	private UsernamePasswordKaptchaProvider usernamePasswordKaptchaProvider;
 
 	public UsernamePasswordKaptchaFilter() {
 		super(new AntPathRequestMatcher("/kaptchaLogin"));
@@ -57,7 +57,7 @@ public class UsernamePasswordKaptchaFilter extends AbstractAuthenticationProcess
 				kaptchaValue);
 		// Allow subclasses to set the "details" property
 		setDetails(request, token);
-		return UsernamePasswordKaptchaProvider.authenticate(token);
+		return usernamePasswordKaptchaProvider.authenticate(token);
 	}
 
 	protected void setDetails(HttpServletRequest request, UsernamePasswordKaptchaToken token) {

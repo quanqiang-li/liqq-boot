@@ -14,6 +14,8 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 
 import com.liqq.conf.security.kaptcha.UsernamePasswordKaptchaFilter;
 import com.liqq.conf.security.kaptcha.UsernamePasswordKaptchaProvider;
+import com.liqq.conf.security.sms.SMSFilter;
+import com.liqq.conf.security.sms.SMSProvider;
 /**
  * Security的自定义配置
  * @author Administrator
@@ -21,23 +23,36 @@ import com.liqq.conf.security.kaptcha.UsernamePasswordKaptchaProvider;
  */
 @Configuration
 public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
+	@Autowired
+	private UsernamePasswordKaptchaProvider usernamePasswordKaptchaProvider;//图形验证码的认证逻辑
+	@Autowired
+	private SMSProvider smsProvider;//短信验证码的认证逻辑
+	@Autowired
+	private MyAuthSuccessHandler myAuthSuccessHandler;//认证成功处理
+	@Autowired
+	private MyAuthFailureHandler myAuthFailureHandler;//认证失败处理
+	@Autowired
+	private MyAccessDecisionManager myAccessDecisionManager;//授权逻辑
+	@Autowired
+	private MyAccessDeniedHandler myAccessDeniedHandler;//授权失败处理，前提认证成功
+	@Autowired
+	private MyAuthenticationEntryPoint myAuthenticationEntryPoint;//授权失败处理，前提未认证
 
-	@Autowired
-	private UsernamePasswordKaptchaProvider usernamePasswordKaptchaProvider;
-	@Autowired
-	private MyAuthSuccessHandler myAuthSuccessHandler;
-	@Autowired
-	private MyAuthFailureHandler myAuthFailureHandler;
-	@Autowired
-	private MyAccessDecisionManager myAccessDecisionManager;
-	@Autowired
-	private MyAccessDeniedHandler myAccessDeniedHandler;
-	@Autowired
-	private MyAuthenticationEntryPoint myAuthenticationEntryPoint;
-
-	@Bean
+	@Bean // 自定义filter
 	public UsernamePasswordKaptchaFilter usernamePasswordKaptchaFilter() {
 		UsernamePasswordKaptchaFilter filter = new UsernamePasswordKaptchaFilter();
+		try {
+			filter.setAuthenticationManager(authenticationManager());
+			filter.setAuthenticationSuccessHandler(myAuthSuccessHandler);
+			filter.setAuthenticationFailureHandler(myAuthFailureHandler);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return filter;
+	}
+	@Bean // 自定义filter
+	public SMSFilter smsFilter() {
+		SMSFilter filter = new SMSFilter();
 		try {
 			filter.setAuthenticationManager(authenticationManager());
 			filter.setAuthenticationSuccessHandler(myAuthSuccessHandler);
@@ -53,13 +68,14 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
-	// 配置认证
+	// 配置认证，支持多个
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(usernamePasswordKaptchaProvider);
+		auth.authenticationProvider(smsProvider);
 	}
 
-	// 配置授权
+	// 配置授权，完全自定义授权
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// 配置url 授权访问
@@ -73,6 +89,7 @@ public class MyWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 		// "OPTIONS",不支持POST,这里粗暴禁用
 		http.csrf().disable();
 		http.addFilterBefore(usernamePasswordKaptchaFilter(), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(smsFilter(), UsernamePasswordAuthenticationFilter.class);
 	}
 
 	public static void main(String[] args) {

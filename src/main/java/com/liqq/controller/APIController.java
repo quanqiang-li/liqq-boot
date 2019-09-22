@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.liqq.annotation.LogAnnotation;
+
 @RestController
 @RequestMapping("api")
 public class APIController {
@@ -33,10 +35,12 @@ public class APIController {
 		return "authed";
 	}
 
+	@LogAnnotation(module = "验证权限")
 	@GetMapping("guest")
 	public String guest() {
 		return "guest";
 	}
+	@LogAnnotation(module = "验证权限")
 	@PostMapping("admin")
 	public String admin() {
 		return "admin";

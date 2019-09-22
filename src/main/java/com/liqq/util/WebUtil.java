@@ -84,12 +84,9 @@ public class WebUtil {
 	/**
 	 * get请求,支持返回字符串类型
 	 * 
-	 * @param url
-	 *            参数拼接到url后
-	 * @param connectTimeout
-	 *            连接超时,单位毫秒,<0 默认系统超时时间,0 永不超时
-	 * @param readTimeout
-	 *            读取数据超时时间,单位毫秒,<0 默认系统超时时间,0 永不超时
+	 * @param url            参数拼接到url后
+	 * @param connectTimeout 连接超时,单位毫秒,<0 默认系统超时时间,0 永不超时
+	 * @param readTimeout    读取数据超时时间,单位毫秒,<0 默认系统超时时间,0 永不超时
 	 * @param headers
 	 * @return
 	 */
@@ -119,10 +116,8 @@ public class WebUtil {
 	/**
 	 * 
 	 * @param url
-	 * @param connectTimeout
-	 *            连接超时,单位毫秒,<0 默认系统超时时间,0 永不超时
-	 * @param readTimeout
-	 *            读取数据超时时间,单位毫秒,<0 默认系统超时时间,0 永不超时
+	 * @param connectTimeout 连接超时,单位毫秒,<0 默认系统超时时间,0 永不超时
+	 * @param readTimeout    读取数据超时时间,单位毫秒,<0 默认系统超时时间,0 永不超时
 	 * @param json
 	 * @param headers
 	 * @return
@@ -155,15 +150,14 @@ public class WebUtil {
 	/**
 	 * 
 	 * @param url
-	 * @param connectTimeout
-	 *            连接超时,单位毫秒,<0 默认系统超时时间,0 永不超时
-	 * @param readTimeout
-	 *            读取数据超时时间,单位毫秒,<0 默认系统超时时间,0 永不超时
+	 * @param connectTimeout 连接超时,单位毫秒,<0 默认系统超时时间,0 永不超时
+	 * @param readTimeout    读取数据超时时间,单位毫秒,<0 默认系统超时时间,0 永不超时
 	 * @param parameters
 	 * @param headers
 	 * @return
 	 */
-	public static String postForm(String url, int connectTimeout, int readTimeout, List<? extends NameValuePair> parameters, Header[] headers) {
+	public static String postForm(String url, int connectTimeout, int readTimeout,
+			List<? extends NameValuePair> parameters, Header[] headers) {
 		logger.info("postForm url:{}", url);
 		CloseableHttpClient httpClient = createClient(url, connectTimeout, readTimeout);
 		HttpPost httpPost = new HttpPost(url);
@@ -214,10 +208,8 @@ public class WebUtil {
 	/**
 	 * 创建http客户端,适用自签名证书 的https客户端,需要添加信任机制
 	 * 
-	 * @param connectTimeout
-	 *            连接超时,单位毫秒,<0 默认系统超时时间,0 永不超时
-	 * @param readTimeout
-	 *            读取数据超时时间,单位毫秒,<0 默认系统超时时间,0 永不超时
+	 * @param connectTimeout 连接超时,单位毫秒,<0 默认系统超时时间,0 永不超时
+	 * @param readTimeout    读取数据超时时间,单位毫秒,<0 默认系统超时时间,0 永不超时
 	 * @return
 	 * @throws KeyManagementException
 	 * @throws NoSuchAlgorithmException
@@ -248,16 +240,15 @@ public class WebUtil {
 		RequestConfig requestConfig = builder.setConnectTimeout(connectTimeout).setSocketTimeout(readTimeout).build();
 		// finally create the HttpClient using HttpClient factory methods and
 		// assign the ssl socket factory
-		return HttpClients.custom().setDefaultRequestConfig(requestConfig).setSSLSocketFactory(connectionFactory).build();
+		return HttpClients.custom().setDefaultRequestConfig(requestConfig).setSSLSocketFactory(connectionFactory)
+				.build();
 	}
 
 	/**
 	 * 创建HTTP默认客户端,适用http,采用公开证书的https
 	 * 
-	 * @param connectTimeout
-	 *            连接超时,单位毫秒,<0 默认系统超时时间,0 永不超时
-	 * @param readTimeout
-	 *            读取数据超时时间,单位毫秒,<0 默认系统超时时间,0 永不超时
+	 * @param connectTimeout 连接超时,单位毫秒,<0 默认系统超时时间,0 永不超时
+	 * @param readTimeout    读取数据超时时间,单位毫秒,<0 默认系统超时时间,0 永不超时
 	 * @return
 	 */
 	private static CloseableHttpClient createDefaultClient(int connectTimeout, int readTimeout) {
@@ -266,12 +257,29 @@ public class WebUtil {
 		return HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
 	}
 
+	/**
+	 * 提取参数的值，优先级先header，后body
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static String extractParam(HttpServletRequest request, String paramName) {
+		if (StringUtils.isEmpty(paramName)) {
+			return null;
+		}
+		String value = request.getHeader(paramName);
+		if (StringUtils.isEmpty(value)) {
+			value = request.getParameter(paramName);
+		}
+		return value;
+
+	}
 
 	public static void main(String[] args) {
-		 int readTimeout = 1000;
-		 int connectTimeout = 1000;
-		 String url = "http://www.baidu.com";
-		 getRequest(url, connectTimeout, readTimeout, null);
+		int readTimeout = 1000;
+		int connectTimeout = 1000;
+		String url = "http://www.baidu.com";
+		getRequest(url, connectTimeout, readTimeout, null);
 
 	}
 }
