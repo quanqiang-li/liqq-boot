@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -21,6 +22,8 @@ import com.liqq.common.Constant;
 import com.liqq.model.SysLog;
 import com.liqq.service.SysLogService;
 import com.liqq.util.WebUtil;
+
+import io.swagger.annotations.ApiOperation;
 
 /**
  * 日志注解处理
@@ -57,6 +60,11 @@ public class LogAdvice {
 		String method = signature.getDeclaringTypeName() + "." + signature.getName();
 		LogAnnotation annotation = signature.getMethod().getAnnotation(LogAnnotation.class);
 		String module = annotation.module();
+		// 当LogAnnotation注解没有指定module时,可以尝试从swagger的ApiOperation注解获取value
+		if(StringUtils.isEmpty(module)){
+			ApiOperation apiOperation = signature.getMethod().getAnnotation(ApiOperation.class);
+			module = apiOperation==null?null:apiOperation.value();
+		}
 		SysLog sysLog = new SysLog();
 
 		try {

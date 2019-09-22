@@ -27,6 +27,7 @@ public class MyAuthFailureHandler implements AuthenticationFailureHandler{
 		// 返回认证失败信息
 		ReturnData rd = new ReturnData(Code.AUTH_ERROR, exception.getMessage());
 		String errorInfo = JSON.toJSONString(rd);
+		response.setContentType("application/json;charset=utf-8");
 		response.setCharacterEncoding(Constant.CHARSET_UTF8);
 		response.getOutputStream().write(errorInfo.getBytes(Constant.CHARSET_UTF8));
 		

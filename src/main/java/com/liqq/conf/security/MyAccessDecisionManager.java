@@ -36,8 +36,9 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
 	private AntPathMatcher antPathMatcher = new AntPathMatcher();
 
 	// 放行的资源
-	private static String[] permitAll = { "/", "/index.html", "/favicon.ico", "/css/**", "/error/**", "/html/**",
-			"/js/**", "/kaptchaLogin", "/logout", "/kaptcha/**", "/smsLogin", "/sms/**" };
+	private static String[] permitAll = { "/", "/index.html", "/favicon.ico", "*.css", "/error/**", "/html/**",
+			"*.js", "*.png", "/kaptchaLogin", "/logout", "/kaptcha/**", "/smsLogin", "/sms/**" , 
+			"/v2/api-docs", "/swagger-ui.html", "/webjars/**","/swagger-resources/**" };
 
 	/**
 	 * 授权失败抛出异常

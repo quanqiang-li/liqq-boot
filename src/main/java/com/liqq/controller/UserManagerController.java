@@ -17,6 +17,12 @@ import com.liqq.common.ReturnData;
 import com.liqq.model.SysUser;
 import com.liqq.service.SysUserService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
+@Api(tags = "管理用户")
 @RestController
 @RequestMapping("userManager")
 public class UserManagerController {
@@ -34,6 +40,9 @@ public class UserManagerController {
 	 */
 	@GetMapping("userPage")
 	@LogAnnotation(module = "用户列表")
+	@ApiOperation("查询用户列表，分页")
+	@ApiImplicitParams({ @ApiImplicitParam(name = "pageNum", value = "页数", paramType = "query"),
+			@ApiImplicitParam(name = "pageSize", value = "每页条数", paramType = "query") })
 	public ReturnData userPage(SysUser sysUser, Integer pageNum, Integer pageSize) {
 		PageInfo<SysUser> selectPage = sysUserService.selectPage(sysUser, pageNum, pageSize);
 		return new ReturnData(Code.OK, selectPage);

@@ -30,6 +30,7 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		// 返回授权拒绝信息
 		ReturnData rd = new ReturnData(Code.ACCESS_ERROR, "未认证");
 		String errorInfo = JSON.toJSONString(rd);
+		response.setContentType("application/json;charset=utf-8");
 		response.setCharacterEncoding(Constant.CHARSET_UTF8);
 		response.getOutputStream().write(errorInfo.getBytes(Constant.CHARSET_UTF8));
 
