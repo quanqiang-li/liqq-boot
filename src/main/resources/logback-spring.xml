@@ -3,6 +3,8 @@
 	<contextName>liqq</contextName>
 	<property name="log_dir" value="/log/liqq" />
 	<property name="log_file" value="liqq" />
+	<!-- 下面的配置可以读取spring配置文件属性，但是此文件名必须是logback-spring.xml -->
+	<!-- <springProperty scope="context" name="log_file" source="eureka.instance.hostname"/> -->
 	<!-- 写出到console -->
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
